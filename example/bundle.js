@@ -73,7 +73,6 @@
 			this.forceUpdate();
 		},
 		render: function render() {
-			console.log('rendering the shit out of it');
 			return React.createElement(
 				'div',
 				null,
@@ -19732,26 +19731,27 @@
 	        return React.createElement(
 	            'div',
 	            null,
-	            React.createElement(
-	                'button',
-	                { type: 'button', className: 'btn btn-default', onClick: this.insertStyle.bind(null, 'bold') },
-	                React.createElement('i', { className: 'glyphicon glyphicon-bold' })
-	            ),
-	            React.createElement(
-	                'button',
-	                { type: 'button', className: 'btn btn-default', onClick: this.insertStyle.bind(null, 'underline') },
-	                'U'
-	            ),
-	            React.createElement(
-	                'button',
-	                { type: 'button', className: 'btn btn-default', onClick: this.insertLink.bind(null, 'http://www.google.com') },
-	                React.createElement('i', { className: 'glyphicon glyphicon-link' })
-	            ),
-	            React.createElement(
-	                'button',
-	                { type: 'button', className: 'btn btn-default', onClick: this.insertStyle.bind(null, 'insertOrderedList') },
-	                React.createElement('i', { className: 'glyphicon glyphicon-list' })
-	            ),
+	            _.map(['bold', 'underline', 'link', 'list'], function (type) {
+	                if (type === 'link') {
+	                    React.createElement(
+	                        'button',
+	                        { type: 'button', className: 'btn btn-default', onClick: this.insertLink.bind(null, 'http://www.google.com') },
+	                        React.createElement('i', { className: 'glyphicon glyphicon-link' })
+	                    );
+	                } else if (type === 'list') {
+	                    return React.createElement(
+	                        'button',
+	                        { type: 'button', className: 'btn btn-default', onClick: this.insertStyle.bind(null, 'insertOrderedList') },
+	                        React.createElement('i', { className: 'glyphicon glyphicon-list' })
+	                    );
+	                } else {
+	                    return React.createElement(
+	                        'button',
+	                        { type: 'button', className: 'btn btn-primary', onClick: this.insertStyle.bind(null, type) },
+	                        React.createElement('i', { className: "glyphicon glyphicon-" + type })
+	                    );
+	                }
+	            }),
 	            txtEditor(this)
 	        );
 	    }

@@ -14,7 +14,7 @@ var Example = React.createClass( {
 	render: function () {
 		return (
 			<div>
-				<Editor className="well" html={this.state.text} update={this.onTextUpdate} />
+				<Editor show_toolbar={true} toolbar_buttons={[ 'bold', 'italic', 'underline', 'list', 'link' ]} className="well" html={this.state.text} update={this.onTextUpdate} />
 				{this.state.text}
 			</div>
 		)

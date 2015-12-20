@@ -1,18 +1,17 @@
-var _ = require( 'underscore' );
 var React = require( 'react' );
 
 var TextEditor = React.createClass({
 
-    getInitialState: function(){
-        return _.extend( {
-            html: '<b>WYSIWYG Editor</b> For ReactJS.',
-            ref: 'wysiwyg_editor',
-            id: 'wysiwyg_editor',
-            className: 'well',
-            placeholder: false,
-            editing: false,
-            style: { maxHeight: '300px', overflow: 'scroll' }
-        }, this.props );
+    getInitialState: function () {
+        return {
+            html: this.props.html || '<b>WYSIWYG Editor</b> For ReactJS.',
+            ref: this.props.reference || 'wysiwyg_editor',
+            id: this.props.id || 'wysiwyg_editor',
+            className: this.props.className || 'well',
+            style: this.props.style || { maxHeight: '300px', overflow: 'scroll' },
+            toolbar_buttons: this.props.toolbar_buttons || [ 'bold', 'italic', 'underline', 'list', 'link' ],
+            show_toolbar: this.props.show_toolbar === undefined ? true : this.props.show_toolbar
+        }
     },
     componentWillReceiveProps: function ( newProps ) {
         if ( this.props.html === undefined || this.state.html === undefined || this.state.ref === undefined ) {
@@ -56,18 +55,50 @@ var TextEditor = React.createClass({
         var target = React.findDOMNode( this.refs[ this.state.ref ] );
         this.props.update( target.innerHTML, this.state.ref );
     },
+    onUrlChange: function ( e ) {
+        this.state.link_url = e.target.value;
+        this.forceUpdate();
+    },
     render: function(){
         return (
             <div>
-                <button type="button" className="btn btn-default" onClick={this.insertStyle.bind( null, 'bold')} ><i className="glyphicon glyphicon-bold" /></button>
-                <button type="button" className="btn btn-default" onClick={this.insertStyle.bind( null, 'underline')} >U</button>
-                <button type="button" className="btn btn-default" onClick={this.insertLink.bind( null, 'http://www.google.com')} ><i className="glyphicon glyphicon-link" /></button>
-                <button type="button" className="btn btn-default" onClick={this.insertStyle.bind( null, 'insertOrderedList')} ><i className="glyphicon glyphicon-list" /></button>
+                <div className="form-inline">{ toolbar( this ) }</div>
                 { txtEditor( this ) }
             </div>
         );
     }
 });
+
+function toolbar ( context ) {
+    if ( context.state.show_toolbar ) {
+        var btns = [];
+        context.state.toolbar_buttons.map( function ( type ) {
+            if ( type === 'link' ) {
+                btns.push(
+                    <div className="input-group">
+                        <span className="input-group-btn">
+                            <button key={type} type="button" className="btn btn-primary" onClick={context.insertLink.bind( null, context.state.link_url)} ><i className="glyphicon glyphicon-link" /></button>
+                        </span>
+                        <input type="text" className="form-control" placeholder="URL" value={context.state.link_url} onChange={context.onUrlChange} />
+                    </div>
+                )
+            } else if ( type === 'list' ) {
+                btns.push(
+                    <button key={type} type="button" className="btn btn-primary" onClick={context.insertStyle.bind( null, 'insertOrderedList')} ><i className="glyphicon glyphicon-list" /></button>
+                )
+            } else if ( type === 'underline' ) {
+                btns.push( <button key={type} type="button" className="btn btn-primary" onClick={context.insertStyle.bind( null, type )} >U</button> )
+            } else {
+                btns.push(
+                    <button key={type} type="button" className="btn btn-primary" onClick={context.insertStyle.bind( null, type )} ><i className={ "glyphicon glyphicon-" + type } /></button>
+                )
+            }
+        } );
+        return btns;
+    } else {
+        return null;
+    }
+}
 
 function txtEditor ( context ) {
     if ( context.state.id && context.state.ref ) {
