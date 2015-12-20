@@ -1,6 +1,6 @@
 {
   "name": "wysiwyg-editor-react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "WYSIWYG Editor for React JS .13.3+",
   "main": "index.js",
   "scripts": {
