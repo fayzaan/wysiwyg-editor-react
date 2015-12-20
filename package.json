@@ -1,0 +1,30 @@
+{
+  "name": "wysiwyg-editor-react",
+  "version": "0.1.0",
+  "description": "WYSIWYG Editor for React JS .13.3+",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server"
+  },
+  "keywords": [
+    "wysiwyg",
+    "text",
+    "editor",
+    "react",
+    "reactjs"
+  ],
+  "author": "Mohammed Faizan Qureshi",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "react": "^0.14.3",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.3.21",
+    "babel-loader": "^6.2.0",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "webpack": "^1.12.9"
+  }
+}
