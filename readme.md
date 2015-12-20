@@ -38,3 +38,11 @@ var Example = React.createClass( {
 
 module.exports = Example;
 ```
+
+## Changes
+
+** 0.1.3 **
+
+* Dynamic Toolbar Buttons, you can pass in an array of style types e.g. ``` [ 'bold', 'italic', 'underline' ] ```
+* Removed UnderscoreJS as no longer needed
+* Some minor styling changes
