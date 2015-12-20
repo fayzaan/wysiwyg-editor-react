@@ -12,7 +12,6 @@ var Example = React.createClass( {
 		this.forceUpdate();
 	},
 	render: function () {
-		console.log( 'rendering the shit out of it' );
 		return (
 			<div>
 				<Editor className="well" html={this.state.text} update={this.onTextUpdate} />
