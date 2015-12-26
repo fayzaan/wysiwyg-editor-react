@@ -17,9 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^3.3.6",
-    "react": "^0.14.3",
-    "gulp": "^3.9.0",
-    "gulp-babel": "^6.1.1"
+    "react": "^0.14.3"
   },
   "devDependencies": {
     "babel-core": "^6.3.21",

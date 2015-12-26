@@ -12,7 +12,7 @@ var TextEditor = React.createClass({
             id: this.props.id || 'wysiwyg_editor',
             className: this.props.className || 'well',
             style: this.props.style || { maxHeight: '300px', overflow: 'scroll' },
-            toolbar_buttons: this.props.toolbar_buttons || ['bold', 'italic', 'underline', 'list', 'link'],
+            toolbar_buttons: this.props.toolbar_buttons || ['bold', 'italic', 'underline', 'list', 'link', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'image'],
             show_toolbar: this.props.show_toolbar === undefined ? true : this.props.show_toolbar
         };
     },
@@ -38,6 +38,21 @@ var TextEditor = React.createClass({
         document.execCommand('insertText', false, field);
         this.contentUpdate();
     },
+    insertImage: function insertImage(uri) {
+        document.execCommand('insertImage', false, uri);
+        this.contentUpdate();
+    },
+    uploadImage: function uploadImage(e) {
+        var file = e.target.files[0];
+        var reader = new FileReader();
+        if (file) {
+            reader.onload = this.imageIsLoaded;
+            reader.readAsDataURL(file);
+        }
+    },
+    imageIsLoaded: function imageIsLoaded(e) {
+        this.insertImage(e.target.result);
+    },
     setCursor: function setCursor() {
         React.findDOMNode(this.refs[this.state.ref]).focus();
         var sel = window.getSelection();
@@ -57,6 +72,7 @@ var TextEditor = React.createClass({
     onKeyPress: function onKeyPress(e) {},
     contentUpdate: function contentUpdate() {
         var target = React.findDOMNode(this.refs[this.state.ref]);
+        target.focus();
         this.props.update(target.innerHTML, this.state.ref);
     },
     onUrlChange: function onUrlChange(e) {
@@ -84,7 +100,7 @@ function toolbar(context) {
             if (type === 'link') {
                 btns.push(React.createElement(
                     'div',
-                    { className: 'input-group' },
+                    { className: 'input-group', key: '_wysiwyg_' + type },
                     React.createElement(
                         'span',
                         { className: 'input-group-btn' },
@@ -108,6 +124,18 @@ function toolbar(context) {
                     { key: type, type: 'button', className: 'btn btn-primary', onClick: context.insertStyle.bind(null, type) },
                     'U'
                 ));
+            } else if (type.indexOf('justify') !== -1) {
+                var pos = type.split('justify')[1].toLowerCase();
+                if (pos === 'full') {
+                    pos = 'justify';
+                }
+                btns.push(React.createElement(
+                    'button',
+                    { key: type, type: 'button', className: 'btn btn-primary', onClick: context.insertStyle.bind(null, type) },
+                    React.createElement('i', { className: "glyphicon glyphicon-align-" + pos })
+                ));
+            } else if (type === 'image') {
+                btns.push(React.createElement('input', { key: type, type: 'file', className: 'btn btn-primary', onChange: context.uploadImage.bind(this) }));
             } else {
                 btns.push(React.createElement(
                     'button',
@@ -118,42 +146,30 @@ function toolbar(context) {
         });
         return btns;
     } else {
-        return React.createElement('div', null);
+        return null;
     }
 }
 
 function txtEditor(context) {
-    if (context.state.id && context.state.ref) {
-        return React.createElement('div', {
-            id: context.state.id,
-            ref: context.state.ref,
-            name: 'email_body',
-            className: context.state.className,
-            tabIndex: 0,
-            key: '0',
-            contentEditable: true,
-            onKeyDown: context.onKeyDown,
-            onMouseDown: context.onMouseDown,
-            onTouchStart: context.onMouseDown,
-            onKeyPress: context.onKeyPress,
-            onKeyUp: context.onKeyUp,
-            onClick: context.props.onClick,
-            style: context.state.style,
-            dangerouslySetInnerHTML: {
-                __html: context.state.html
-            }
-        });
-    } else {
-        return React.createElement(
-            'div',
-            null,
-            React.createElement(
-                'p',
-                null,
-                'ID or Reference not defined'
-            )
-        );
-    }
+    return React.createElement('div', {
+        id: context.state.id,
+        ref: context.state.ref,
+        name: 'email_body',
+        className: context.state.className,
+        tabIndex: 0,
+        key: '0',
+        contentEditable: true,
+        onKeyDown: context.onKeyDown,
+        onMouseDown: context.onMouseDown,
+        onTouchStart: context.onMouseDown,
+        onKeyPress: context.onKeyPress,
+        onKeyUp: context.onKeyUp,
+        onClick: context.props.onClick,
+        style: context.state.style,
+        dangerouslySetInnerHTML: {
+            __html: context.state.html
+        }
+    });
 }
 
 module.exports = TextEditor;

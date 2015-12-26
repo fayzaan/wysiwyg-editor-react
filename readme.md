@@ -48,7 +48,7 @@ module.exports = Example;
 ## Options
 
 * You can list the buttons you want shown in the toolbar by passing in an array to toolbar_buttons.
-```e.g. [ 'bold', 'italic', 'underline', 'list', 'link' ] ```
+```e.g. [ 'bold', 'italic', 'underline', 'list', 'link', 'justifyLeft', 'justifyCenter','justifyRight', 'justifyFull', 'image' ] ```
 * You can hide the toolbar by setting show_toolbar to false (allowing you to create your own buttons and call the editor's functions yourself.)
 * You can pass in className to change the editable div's class for styling purposes
-* 
+* You can pass in style to change style of editable div. ( defaults maxHeight to 300px and overflow to scroll )

@@ -9,7 +9,7 @@ var TextEditor = React.createClass({
             id: this.props.id || 'wysiwyg_editor',
             className: this.props.className || 'well',
             style: this.props.style || { maxHeight: '300px', overflow: 'scroll' },
-            toolbar_buttons: this.props.toolbar_buttons || [ 'bold', 'italic', 'underline', 'list', 'link' ],
+            toolbar_buttons: this.props.toolbar_buttons || [ 'bold', 'italic', 'underline', 'list', 'link', 'justifyLeft', 'justifyCenter','justifyRight', 'justifyFull', 'image' ],
             show_toolbar: this.props.show_toolbar === undefined ? true : this.props.show_toolbar
         }
     },
@@ -35,6 +35,21 @@ var TextEditor = React.createClass({
         document.execCommand( 'insertText', false, field );
         this.contentUpdate();
     },
+    insertImage: function ( uri ) {
+        document.execCommand( 'insertImage', false, uri );
+        this.contentUpdate();
+    },
+    uploadImage: function ( e ) {
+        var file = e.target.files[ 0 ];
+        var reader = new FileReader();
+        if ( file ) {
+            reader.onload = this.imageIsLoaded;
+            reader.readAsDataURL( file );
+        }
+    },
+    imageIsLoaded: function ( e ) {
+        this.insertImage( e.target.result );
+    },
     setCursor: function () {
         React.findDOMNode( this.refs[ this.state.ref ] ).focus();
         var sel = window.getSelection();
@@ -54,6 +69,7 @@ var TextEditor = React.createClass({
     onKeyPress: function ( e ) {},
     contentUpdate: function () {
         var target = React.findDOMNode( this.refs[ this.state.ref ] );
+        target.focus();
         this.props.update( target.innerHTML, this.state.ref );
     },
     onUrlChange: function ( e ) {
@@ -76,7 +92,7 @@ function toolbar ( context ) {
         context.state.toolbar_buttons.map( function ( type ) {
             if ( type === 'link' ) {
                 btns.push(
-                    <div className="input-group">
+                    <div className="input-group" key={'_wysiwyg_' + type}>
                         <span className="input-group-btn">
                             <button key={type} type="button" className="btn btn-primary" onClick={context.insertLink.bind( null, context.state.link_url)} ><i className="glyphicon glyphicon-link" /></button>
                         </span>
@@ -89,6 +105,16 @@ function toolbar ( context ) {
                 )
             } else if ( type === 'underline' ) {
                 btns.push( <button key={type} type="button" className="btn btn-primary" onClick={context.insertStyle.bind( null, type )} >U</button> )
+            } else if ( type.indexOf( 'justify' ) !== -1 ) {
+                var pos = type.split( 'justify' )[1].toLowerCase();
+                if ( pos === 'full' ) { pos = 'justify' }
+                btns.push(
+                    <button key={type} type="button" className="btn btn-primary" onClick={context.insertStyle.bind( null, type )} ><i className={ "glyphicon glyphicon-align-" + pos } /></button>
+                )
+            } else if ( type === 'image' ) {
+                btns.push(
+                    <input key={type} type="file" className="btn btn-primary" onChange={context.uploadImage.bind( this )} />
+                )
             } else {
                 btns.push(
                     <button key={type} type="button" className="btn btn-primary" onClick={context.insertStyle.bind( null, type )} ><i className={ "glyphicon glyphicon-" + type } /></button>
@@ -97,39 +123,30 @@ function toolbar ( context ) {
         } );
         return btns;
     } else {
-        return <div></div>;
+        return null;
     }
 }
 
 function txtEditor ( context ) {
-    if ( context.state.id && context.state.ref ) {
-        return React.createElement('div', {
-            id: context.state.id,
-            ref: context.state.ref,
-            name: 'email_body',
-            className: context.state.className,
-            tabIndex: 0,
-            key: '0',
-            contentEditable: true,
-            onKeyDown: context.onKeyDown,
-            onMouseDown: context.onMouseDown,
-            onTouchStart: context.onMouseDown,
-            onKeyPress: context.onKeyPress,
-            onKeyUp: context.onKeyUp,
-            onClick: context.props.onClick,
-            style: context.state.style,
-            dangerouslySetInnerHTML: {
-                __html: context.state.html
-            }
-        } );
-    } else {
-        return (
-            <div>
-                <p>ID or Reference not defined</p>
-            </div>
-        );
-    }
-
+    return React.createElement('div', {
+        id: context.state.id,
+        ref: context.state.ref,
+        name: 'email_body',
+        className: context.state.className,
+        tabIndex: 0,
+        key: '0',
+        contentEditable: true,
+        onKeyDown: context.onKeyDown,
+        onMouseDown: context.onMouseDown,
+        onTouchStart: context.onMouseDown,
+        onKeyPress: context.onKeyPress,
+        onKeyUp: context.onKeyUp,
+        onClick: context.props.onClick,
+        style: context.state.style,
+        dangerouslySetInnerHTML: {
+            __html: context.state.html
+        }
+    } );
 }
 
 module.exports = TextEditor;
