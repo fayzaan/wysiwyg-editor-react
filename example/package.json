@@ -1,25 +1,18 @@
 {
-  "name": "wysiwyg-editor-react",
-  "version": "0.1.3",
-  "description": "WYSIWYG Editor for React JS .13.3+",
-  "main": "wysiwyg-editor-react.js",
+  "name": "example",
+  "version": "1.0.0",
+  "description": "Example",
+  "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server"
   },
-  "keywords": [
-    "wysiwyg",
-    "text",
-    "editor",
-    "react",
-    "reactjs"
-  ],
+  "keywords": [],
   "author": "Mohammed Faizan Qureshi",
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^3.3.6",
     "react": "^0.14.3",
-    "gulp": "^3.9.0",
-    "gulp-babel": "^6.1.1"
+    "react-dom": "*"
   },
   "devDependencies": {
     "babel-core": "^6.3.21",

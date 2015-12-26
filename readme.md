@@ -10,16 +10,22 @@ You can look at the example folder to get an understanding of implementing this 
 $ npm install wysiwyg-editor-react
 ```
 
+## Include
+
+```
+var Editor = require( 'wysiwyg-editor-react' );
+```
+
 ## Usage
 
 ```javascript
 var React = require( 'react' );
-var Editor = require( '../index' );
+var Editor = require( 'wysiwyg-editor-react' );
 
 var Example = React.createClass( {
   getInitialState: function () {
     return {
-      text: '<b>WYSIWYG Editor</b> For ReactJS.'
+      text: '<b>WYSIWYG Editor</b> For <a href="http://www.reactjs.com">ReactJS</a>.'
     }
   },
   onTextUpdate: function ( val ) {
@@ -39,10 +45,8 @@ var Example = React.createClass( {
 module.exports = Example;
 ```
 
-## Changes
+## Options
 
-** 0.1.3 **
-
-* Dynamic Toolbar Buttons, you can pass in an array of style types e.g. ``` [ 'bold', 'italic', 'underline' ] ```
-* Removed UnderscoreJS as no longer needed
-* Some minor styling changes
+* You can list the buttons you want shown in the toolbar by passing in an array to toolbar_buttons.
+```e.g. [ 'bold', 'italic', 'underline', 'list', 'link' ] ```
+* You can hide the toolbar by setting show_toolbar to false.

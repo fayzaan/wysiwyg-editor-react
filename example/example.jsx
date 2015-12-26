@@ -1,10 +1,10 @@
 var React = require( 'react' );
-var Editor = require( '../index' );
+var Editor = require( './wysiwyg-editor-react.js' );
 
 var Example = React.createClass( {
 	getInitialState: function () {
 		return {
-			text: '<b>WYSIWYG Editor</b> For ReactJS.'
+			text: '<b>WYSIWYG Editor</b> For <a href="http://www.reactjs.com">ReactJS</a>.'
 		}
 	},
 	onTextUpdate: function ( val ) {

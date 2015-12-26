@@ -4,7 +4,7 @@ var TextEditor = React.createClass({
 
     getInitialState: function () {
         return {
-            html: this.props.html || '<b>WYSIWYG Editor</b> For ReactJS.',
+            html: this.props.html || '<b>WYSIWYG Editor</b> For <a href="http://www.reactjs.com">ReactJS</a>.',
             ref: this.props.reference || 'wysiwyg_editor',
             id: this.props.id || 'wysiwyg_editor',
             className: this.props.className || 'well',
@@ -28,6 +28,7 @@ var TextEditor = React.createClass({
     },
     insertLink: function ( uri ) {
         document.execCommand( 'createLink', false, uri );
+        this.state.link_url = '';
         this.contentUpdate();
     },
     insertField: function ( field, e ) {
@@ -84,7 +85,7 @@ function toolbar ( context ) {
                 )
             } else if ( type === 'list' ) {
                 btns.push(
-                    <button key={type} type="button" className="btn btn-primary" onClick={context.insertStyle.bind( null, 'insertOrderedList')} ><i className="glyphicon glyphicon-list" /></button>
+                    <button key={type} type="button" className="btn btn-primary" onClick={context.insertStyle.bind( null, 'insertUnorderedList')} ><i className="glyphicon glyphicon-list" /></button>
                 )
             } else if ( type === 'underline' ) {
                 btns.push( <button key={type} type="button" className="btn btn-primary" onClick={context.insertStyle.bind( null, type )} >U</button> )
@@ -96,7 +97,7 @@ function toolbar ( context ) {
         } );
         return btns;
     } else {
-        return null;
+        return <div></div>;
     }
 }
 
