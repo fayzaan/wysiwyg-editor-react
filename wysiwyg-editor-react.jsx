@@ -9,7 +9,7 @@ var TextEditor = React.createClass({
             id: this.props.id || 'wysiwyg_editor',
             className: this.props.className || 'well',
             style: this.props.style || { maxHeight: '300px', overflow: 'scroll' },
-            toolbar_buttons: this.props.toolbar_buttons || [ 'bold', 'italic', 'underline', 'list', 'link', 'justifyLeft', 'justifyCenter','justifyRight', 'justifyFull', 'image' ],
+            toolbar_buttons: this.props.toolbar_buttons || [ 'bold', 'italic', 'underline', 'list', 'link', 'justifyLeft', 'justifyCenter','justifyRight', 'justifyFull', 'image', 'header' ],
             show_toolbar: this.props.show_toolbar === undefined ? true : this.props.show_toolbar
         }
     },
@@ -24,6 +24,10 @@ var TextEditor = React.createClass({
     },
     insertStyle: function ( type ) {
         document.execCommand( type, false, null );
+        this.contentUpdate();
+    },
+    insertHeading: function ( h ) {
+        document.execCommand( 'formatBlock', false, h );
         this.contentUpdate();
     },
     insertLink: function ( uri ) {
@@ -113,8 +117,15 @@ function toolbar ( context ) {
                 )
             } else if ( type === 'image' ) {
                 btns.push(
-                    <input key={type} type="file" className="btn btn-primary" onChange={context.uploadImage.bind( this )} />
+                    <input style={{display:'inline'}} key={type} type="file" className="btn btn-primary" onChange={context.uploadImage.bind( this )} />
                 )
+            } else if ( type === 'header' ) {
+                var tags = [ '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>' ];
+                tags.map( function ( tag, i ) {
+                    btns.push(
+                        <button key={type+'_'+tag} type="button" className="btn btn-primary" onClick={context.insertHeading.bind( null, tag )} ><i className={ "glyphicon glyphicon-header" } />{(i+1)}</button>
+                    )
+                } );
             } else {
                 btns.push(
                     <button key={type} type="button" className="btn btn-primary" onClick={context.insertStyle.bind( null, type )} ><i className={ "glyphicon glyphicon-" + type } /></button>

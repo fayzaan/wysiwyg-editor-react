@@ -1,6 +1,6 @@
 # WYSIWYG EDITOR For ReactJS .13+
 
-This component allows users to enter text and style text using common styling techniques, such as Bold, Italic, Underline, etc. It is a very basic implementation and I intend to expand on this project further.
+This component allows users to enter text and style text using common styling techniques, such as Bold, Italic, Underline, etc.
 
 You can look at the example folder to get an understanding of implementing this editor.
 

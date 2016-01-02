@@ -1,3 +1,8 @@
+## 0.1.6 ( 2016-01-02 )
+
+* Added header buttons.
+* Added inline styling to File upload.
+
 ## 0.1.5 ( 2015-12-26 )
 
 * Added image insert, justify (left/center/right/full)
