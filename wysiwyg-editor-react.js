@@ -5,21 +5,21 @@ var React = require('react');
 var TextEditor = React.createClass({
     displayName: 'TextEditor',
 
+
     getInitialState: function getInitialState() {
         return {
-            html: this.props.html || '<b>WYSIWYG Editor</b> For <a href="http://www.reactjs.com">ReactJS</a>.',
             ref: this.props.reference || 'wysiwyg_editor',
             id: this.props.id || 'wysiwyg_editor',
             className: this.props.className || 'well',
             style: this.props.style || { maxHeight: '300px', overflow: 'scroll' },
             toolbar_buttons: this.props.toolbar_buttons || ['bold', 'italic', 'underline', 'list', 'link', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'image', 'header'],
-            show_toolbar: this.props.show_toolbar === undefined ? true : this.props.show_toolbar
+            show_toolbar: this.props.show_toolbar === undefined ? true : this.props.show_toolbar,
+            headerTags: ['<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>']
         };
     },
     componentWillReceiveProps: function componentWillReceiveProps(newProps) {
-        if (this.props.html === undefined || this.state.html === undefined || this.state.ref === undefined) {
+        if (this.state.ref !== newProps.reference || this.state.id !== newProps.id) {
             this.setState({
-                html: newProps.html,
                 ref: newProps.reference,
                 id: newProps.id
             });
@@ -35,8 +35,9 @@ var TextEditor = React.createClass({
     },
     insertLink: function insertLink(uri) {
         document.execCommand('createLink', false, uri);
-        this.state.link_url = '';
-        this.contentUpdate();
+        this.setState({ link_url: '' }, function () {
+            this.contentUpdate();
+        });
     },
     insertField: function insertField(field, e) {
         document.execCommand('insertText', false, field);
@@ -72,37 +73,27 @@ var TextEditor = React.createClass({
     onKeyUp: function onKeyUp(e) {
         this.contentUpdate();
     },
-    onKeyDown: function onKeyDown(e) {},
-    onKeyPress: function onKeyPress(e) {},
     contentUpdate: function contentUpdate() {
         var target = React.findDOMNode(this.refs[this.state.ref]);
         target.focus();
         this.props.update(target.innerHTML, this.state.ref);
     },
     onUrlChange: function onUrlChange(e) {
-        this.state.link_url = e.target.value;
-        this.forceUpdate();
+        this.setState({ link_url: e.target.value });
     },
-    render: function render() {
-        return React.createElement(
-            'div',
-            null,
-            React.createElement(
-                'div',
-                { className: 'form-inline' },
-                toolbar(this)
-            ),
-            txtEditor(this)
-        );
-    }
-});
+    toolBar: function toolBar() {
+        if (!this.state.show_toolbar) {
+            return null;
+        }
 
-function toolbar(context) {
-    if (context.state.show_toolbar) {
-        var btns = [];
-        context.state.toolbar_buttons.map(function (type) {
-            if (type === 'link') {
-                btns.push(React.createElement(
+        return this.state.toolbar_buttons.map(function (type) {
+            return this.getButton(type);
+        }, this);
+    },
+    getButton: function getButton(type) {
+        switch (type) {
+            case 'link':
+                return React.createElement(
                     'div',
                     { className: 'input-group', key: '_wysiwyg_' + type },
                     React.createElement(
@@ -110,80 +101,85 @@ function toolbar(context) {
                         { className: 'input-group-btn' },
                         React.createElement(
                             'button',
-                            { key: type, type: 'button', className: 'btn btn-primary', onClick: context.insertLink.bind(null, context.state.link_url) },
+                            { key: type, type: 'button', className: 'btn btn-primary', onClick: this.insertLink.bind(null, this.state.link_url) },
                             React.createElement('i', { className: 'glyphicon glyphicon-link' })
                         )
                     ),
-                    React.createElement('input', { type: 'text', className: 'form-control', placeholder: 'URL', value: context.state.link_url, onChange: context.onUrlChange })
-                ));
-            } else if (type === 'list') {
-                btns.push(React.createElement(
+                    React.createElement('input', { type: 'text', className: 'form-control', placeholder: 'URL', value: this.state.link_url, onChange: this.onUrlChange })
+                );
+            case 'list':
+                return React.createElement(
                     'button',
-                    { key: type, type: 'button', className: 'btn btn-primary', onClick: context.insertStyle.bind(null, 'insertUnorderedList') },
+                    { key: type, type: 'button', className: 'btn btn-primary', onClick: this.insertStyle.bind(null, 'insertUnorderedList') },
                     React.createElement('i', { className: 'glyphicon glyphicon-list' })
-                ));
-            } else if (type === 'underline') {
-                btns.push(React.createElement(
+                );
+            case 'underline':
+                return React.createElement(
                     'button',
-                    { key: type, type: 'button', className: 'btn btn-primary', onClick: context.insertStyle.bind(null, type) },
+                    { key: type, type: 'button', className: 'btn btn-primary', onClick: this.insertStyle.bind(null, type) },
                     'U'
-                ));
-            } else if (type.indexOf('justify') !== -1) {
+                );
+            case 'justify':
                 var pos = type.split('justify')[1].toLowerCase();
                 if (pos === 'full') {
                     pos = 'justify';
                 }
-                btns.push(React.createElement(
+                return React.createElement(
                     'button',
-                    { key: type, type: 'button', className: 'btn btn-primary', onClick: context.insertStyle.bind(null, type) },
+                    { key: type, type: 'button', className: 'btn btn-primary', onClick: this.insertStyle.bind(null, type) },
                     React.createElement('i', { className: "glyphicon glyphicon-align-" + pos })
-                ));
-            } else if (type === 'image') {
-                btns.push(React.createElement('input', { style: { display: 'inline' }, key: type, type: 'file', className: 'btn btn-primary', onChange: context.uploadImage.bind(this) }));
-            } else if (type === 'header') {
-                var tags = ['<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>'];
-                tags.map(function (tag, i) {
-                    btns.push(React.createElement(
+                );
+            case 'image':
+                return React.createElement('input', { style: { display: 'inline' }, key: type, type: 'file', className: 'btn btn-primary', onChange: this.uploadImage.bind(this) });
+            case 'header':
+                return this.state.headerTags.map(function (tag, i) {
+                    return React.createElement(
                         'button',
-                        { key: type + '_' + tag, type: 'button', className: 'btn btn-primary', onClick: context.insertHeading.bind(null, tag) },
+                        { key: type + '_' + tag, type: 'button', className: 'btn btn-primary', onClick: this.insertHeading.bind(null, tag) },
                         React.createElement('i', { className: "glyphicon glyphicon-header" }),
                         i + 1
-                    ));
-                });
-            } else {
-                btns.push(React.createElement(
+                    );
+                }, this);
+            default:
+                return React.createElement(
                     'button',
-                    { key: type, type: 'button', className: 'btn btn-primary', onClick: context.insertStyle.bind(null, type) },
+                    { key: type, type: 'button', className: 'btn btn-primary', onClick: this.insertStyle.bind(null, type) },
                     React.createElement('i', { className: "glyphicon glyphicon-" + type })
-                ));
+                );
+        }
+    },
+    txtEditor: function txtEditor() {
+        return React.createElement('div', {
+            id: this.state.id,
+            ref: this.state.ref,
+            name: 'text_body',
+            className: this.state.className,
+            tabIndex: 0,
+            key: '0',
+            contentEditable: true,
+            onMouseDown: this.onMouseDown,
+            onTouchStart: this.onMouseDown,
+            onKeyUp: this.onKeyUp,
+            onClick: this.props.onClick,
+            style: this.state.style,
+            dangerouslySetInnerHTML: {
+                __html: this.props.html
             }
         });
-        return btns;
-    } else {
-        return null;
-    }
-}
+    },
 
-function txtEditor(context) {
-    return React.createElement('div', {
-        id: context.state.id,
-        ref: context.state.ref,
-        name: 'email_body',
-        className: context.state.className,
-        tabIndex: 0,
-        key: '0',
-        contentEditable: true,
-        onKeyDown: context.onKeyDown,
-        onMouseDown: context.onMouseDown,
-        onTouchStart: context.onMouseDown,
-        onKeyPress: context.onKeyPress,
-        onKeyUp: context.onKeyUp,
-        onClick: context.props.onClick,
-        style: context.state.style,
-        dangerouslySetInnerHTML: {
-            __html: context.state.html
-        }
-    });
-}
+    render: function render() {
+        return React.createElement(
+            'div',
+            null,
+            React.createElement(
+                'div',
+                { className: 'form-inline' },
+                this.toolBar()
+            ),
+            this.txtEditor()
+        );
+    }
+});
 
 module.exports = TextEditor;
