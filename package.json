@@ -15,6 +15,10 @@
   ],
   "author": "Mohammed Faizan Qureshi",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fayzaan/wysiwyg-editor-react"
+  },
   "dependencies": {
     "bootstrap": "^3.3.6",
     "react": "^0.14.3"
