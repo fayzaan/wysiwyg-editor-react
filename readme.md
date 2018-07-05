@@ -45,6 +45,7 @@ var Example = React.createClass( {
 module.exports = Example;
 ```
 
+
 ## Options
 
 * You can list the buttons you want shown in the toolbar by passing in an array to toolbar_buttons.
